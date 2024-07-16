@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 5.6.0" //<--- ** make sure cli version matches with you projects cli
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Release",
+        "image": "latest"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "production": {
+      "ios": {
+        "buildConfiguration": "Release",
+        "image": "latest"
+      },
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

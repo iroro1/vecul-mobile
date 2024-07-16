@@ -1,0 +1,47 @@
+Generate Apk
++++++++++++++
+eas build -p android --profile preview
+eas build -p android --local --profile preview
+
+Production build for ios(ipa) and android(aab)
+++++++++++++++++++++++++++++++++++++++++++++++
+eas build 
+
+==========================
+npx expo prebuild --skip-dependency-update react-native,react
+eas build -p android --profile preview
+eas build -p android --profile=development
+eas build --profile preview --platform android
+npx expo-doctor
+
+npx expo run:android
+npx expo run:ios
+
+DEBUGGING
++++++++++
+deleted the Android folder and Ios,
+deleted the Node Modules,
+
+yarn
+eas build:configure
+npx expo prebuild
+eas build --clear-cache
+npx expo install --fix
+npx expo start --clear
+/// optimise media files
+npx expo export
+
+--------------
+keystore
+eas credentials
+
+
+eas build --local 
+eas build --platform android --local
+eas build --platform ios --local
+for builds locally without eas online
+
+
+--------------
+Switch Accounts 
+XPO_NO_KEYCHAIN=1 EXPO_APP_STORE_DEBUG=1 npx @expo/apple-utils login

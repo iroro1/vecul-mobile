@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vecul Redirect</title>
+  </head>
+  <body>
+    <script>
+      // Function to detect the operating system
+      function detectOS() {
+        const userAgent =
+          navigator.userAgent || navigator.vendor || window.opera;
+
+        if (/android/i.test(userAgent)) {
+          return "Android";
+        } else if (/iPad|iPhone|iPod/i.test(userAgent) && !window.MSStream) {
+          return "iOS";
+        } else {
+          return "Unknown";
+        }
+      }
+
+      // Function to redirect to the appropriate app store
+      function redirectToAppStore() {
+        const os = detectOS();
+
+        if (os === "Android") {
+          window.location.href =
+            "https://play.google.com/store/apps/details?id=com.vecul";
+        } else if (os === "iOS") {
+          window.location.href = "https://apps.apple.com/app/vecul/id310633997";
+        } else {
+          // Redirect to a default URL or display an error message
+          alert("Unsupported operating system");
+        }
+      }
+
+      // Call the redirection function when the page loads
+      redirectToAppStore();
+    </script>
+  </body>
+</html>
