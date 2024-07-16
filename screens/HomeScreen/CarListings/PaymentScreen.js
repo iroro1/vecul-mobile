@@ -1,17 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { RavePaymentManager } from "flutterwave-react-native";
-import { closePaymentModal } from "flutterwave-react-v3";
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Image,
   Modal,
   Platform,
-  Pressable,
-  ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -30,7 +24,7 @@ import {
 } from "../../../services/bookingService";
 import { createBookingApi } from "../../../services/coreService";
 import { authSelector } from "../../../store/appSlice";
-import { currencyPipe, delayFn, generateRandomString } from "../../../utils";
+import { currencyPipe, delayFn } from "../../../utils";
 import { COLORS } from "../../../utils/colors";
 import ScreenWrapper from "../../ScreenWrapper";
 // import Paystack from "paystack-react-native";
@@ -183,27 +177,29 @@ const PaymentScreen = () => {
           />
         </View>
       </Modal>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 20,
-          marginBottom: 30,
-          marginHorizontal: "3%",
-        }}
-      >
-        <BackButton type={2} onPress={() => navigation.goBack()} />
-
-        <Text
+      {!settlModal && (
+        <View
           style={{
-            color: "#101928",
-            fontWeight: "600",
-            fontSize: 20,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 20,
+            marginBottom: 30,
+            marginHorizontal: "3%",
           }}
         >
-          Payment Screen
-        </Text>
-      </View>
+          <BackButton type={2} onPress={() => navigation.goBack()} />
+
+          <Text
+            style={{
+              color: "#101928",
+              fontWeight: "600",
+              fontSize: 20,
+            }}
+          >
+            Payment Screen
+          </Text>
+        </View>
+      )}
 
       <KeyboardAwareScrollView
         contentContainerStyle={{
@@ -225,14 +221,14 @@ const PaymentScreen = () => {
           Transfer the <Text style={tw`font-bold`}>exact amount above</Text> to
           the account details below
         </TextCustom>
-
         {!settlModal && (
           <View
             style={tw`w-full  flex flex-col justify-between rounded-[10px] mx-[3%] mt-0 p-4`}
           >
             <TouchableOpacity
+              disabled={load2}
               style={tw`w-full h-[60px] relative border border-[#D0D5DD] rounded-[10px] flex items-center justify-center rounded-[10px]  mt-4 p-4`}
-              onPress={() => setPaystackModal(true)}
+              onPress={() => !load2 && setPaystackModal(true)}
             >
               <Image
                 style={tw`w-[120px] h-[100%] object-contain mr-8`}
@@ -250,48 +246,96 @@ const PaymentScreen = () => {
           </View>
         )}
         {settlModal ? (
-          <View
-            style={tw`w-full h-[249px] flex flex-col justify-between bg-[#E4E7EC] rounded-[10px] mx-[3%] mt-4 p-4`}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color="black"
-              onPress={() => setSettlModal(false)}
-              style={tw`absolute top-[-80px] z-10 left-4]`}
-            />
-            <View style={tw`relative`}>
-              <Text style={tw`text-[#667185]`}>Bank name</Text>
-              <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
-                {data.bank_name}
-              </Text>
+          <View style={tw`absolute w-full top-0 left-0 h-full bg-white`}>
+            <View
+              style={tw`w-full  flex flex-col justify-between items-center mx-[3%] p-4`}
+            >
+              <TextCustom style={tw`text-[#000] text-[30px] my-3`}>
+                {currencyPipe(+bookingData?.total)}
+              </TextCustom>
+              <TextCustom style={tw`text-[#101928] text-center w-[70%]`}>
+                Transfer the{" "}
+                <Text style={tw`font-bold`}>exact amount above</Text> to the
+                account details below
+              </TextCustom>
+            </View>
+            <View
+              style={tw`w-full h-[249px] flex flex-col justify-between bg-[#E4E7EC] rounded-[10px] mx-[3%] mt-4 p-4`}
+            >
+              <View style={tw`relative`}>
+                <Text style={tw`text-[#667185]`}>Bank name</Text>
+                <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
+                  {data.bank_name}
+                </Text>
 
-              <Ionicons
-                style={tw`absolute right-0 top-4`}
-                name="copy-outline"
-                size={16}
-                color={COLORS.primary}
-                onPress={() => copyFn(data.bank_name)}
-              />
+                <Ionicons
+                  style={tw`absolute right-0 top-4`}
+                  name="copy-outline"
+                  size={16}
+                  color={COLORS.primary}
+                  onPress={() => copyFn(data.bank_name)}
+                />
+              </View>
+              <View style={tw`mt-4 relative`}>
+                <Text style={tw`text-[#667185]`}>Account number</Text>
+                <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
+                  {data.account_number}
+                </Text>
+                <Ionicons
+                  style={tw`absolute right-0 top-4`}
+                  name="copy-outline"
+                  size={16}
+                  color={COLORS.primary}
+                  onPress={() => copyFn(data.account_number)}
+                />
+              </View>
+              <View style={tw`mt-4 relative`}>
+                <Text style={tw`text-[#667185]`}>Account holder</Text>
+                <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
+                  {data.account_holder_name}
+                </Text>
+              </View>
             </View>
-            <View style={tw`mt-4 relative`}>
-              <Text style={tw`text-[#667185]`}>Account number</Text>
-              <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
-                {data.account_number}
-              </Text>
-              <Ionicons
-                style={tw`absolute right-0 top-4`}
-                name="copy-outline"
-                size={16}
-                color={COLORS.primary}
-                onPress={() => copyFn(data.account_number)}
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                bottom: 10,
+                gap: 15,
+                marginTop: "auto",
+              }}
+            >
+              <CustomButton
+                Icon={<Ionicons size={20} name="arrow-back" />}
+                style={{
+                  height: 40,
+                  width: 140,
+                  borderWidth: 1,
+                  borderColor: "#D0D5DD",
+                  backgroundColor: "transparent",
+                }}
+                textStyles={{
+                  color: "#000",
+                  marginLeft: 6,
+                }}
+                label="Go Back"
+                onPress={() => setSettlModal(false)}
               />
-            </View>
-            <View style={tw`mt-4 relative`}>
-              <Text style={tw`text-[#667185]`}>Account holder</Text>
-              <Text style={tw`text-[#101928] mt-2 text-[14px]`}>
-                {data.account_holder_name}
-              </Text>
+              <CustomButton
+                style={{
+                  height: 40,
+                  width: 219,
+                }}
+                disabled={load2}
+                label="I've sent the money"
+                onPress={() => {
+                  sentMoneyFn();
+                }}
+                loading={load2}
+              />
             </View>
           </View>
         ) : (
@@ -299,56 +343,34 @@ const PaymentScreen = () => {
             style={tw`w-full relative  flex flex-col justify-between rounded-[10px] mx-[3%] mt-0 p-4`}
           >
             <TouchableOpacity
-              style={tw`w-full h-[60px] relative border border-[#D0D5DD] rounded-[10px] flex items-center justify-center rounded-[10px]  mt-4 p-4`}
-              onPress={() => setSettlModal(true)}
+              disabled={load2}
+              style={tw`w-full h-[60px] relative border border-[#D0D5DD] rounded-[10px] flex items-center justify-center rounded-[10px]  mt-0 p-4`}
+              onPress={() => !load2 && setSettlModal(true)}
             >
               <Text style={tw`text-[#101928] font-bold`}>Pay with Settl</Text>
             </TouchableOpacity>
           </View>
         )}
-
-        {!settlModal && (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              bottom: 10,
-              gap: 15,
-              marginTop: "auto",
-            }}
-          >
-            <CustomButton
-              Icon={<Ionicons size={20} name="arrow-back" />}
-              style={{
-                height: 40,
-                width: 140,
-                borderWidth: 1,
-                borderColor: "#D0D5DD",
-                backgroundColor: "transparent",
-              }}
-              textStyles={{
-                color: "#000",
-                marginLeft: 6,
-              }}
-              label="Go Back"
-              onPress={() => navigation.goBack()}
-            />
-            <CustomButton
-              style={{
-                height: 40,
-                width: 219,
-              }}
-              disabled={load2}
-              label="I've sent the money"
-              onPress={() => {
-                sentMoneyFn();
-              }}
-              loading={load2}
-            />
-          </View>
-        )}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            bottom: 10,
+            gap: 15,
+            marginTop: "auto",
+            marginBottom: 20,
+          }}
+        >
+          {load2 && (
+            <View>
+              <Text style={tw`text-[#000] text-center mb-6`}>
+                Creating booking, Please wait ...
+              </Text>
+            </View>
+          )}
+        </View>
       </KeyboardAwareScrollView>
     </ScreenWrapper>
   );

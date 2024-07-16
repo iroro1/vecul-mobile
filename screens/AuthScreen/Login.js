@@ -48,7 +48,7 @@ const Login = () => {
     setLoad(true);
     try {
       const res = await loginApi({
-        email: data.email.toLowerCase(),
+        email: data.email.toLowerCase().trim(),
         password: data.password,
       });
       if (+res?.status === 200) {
@@ -99,7 +99,7 @@ const Login = () => {
   };
 
   return (
-    <AnimatePresence>
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           position: "absolute",
@@ -273,7 +273,7 @@ const Login = () => {
           loading={load}
         />
       </View>
-    </AnimatePresence>
+    </SafeAreaView>
   );
 };
 

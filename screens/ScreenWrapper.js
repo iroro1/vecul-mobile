@@ -17,7 +17,7 @@ const ScreenWrapper = ({
   noSafe = false,
 }) => {
   return (
-    <>
+    <View style={{ flex: 1 }}>
       {Platform.OS === "android" && <StatusBar />}
       <ToastBoxVecul />
       {noSafe ? (
@@ -131,7 +131,7 @@ const ScreenWrapper = ({
           )}
         </SafeAreaView>
       )}
-    </>
+    </View>
   );
 };
 

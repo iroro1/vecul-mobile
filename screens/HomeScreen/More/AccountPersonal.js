@@ -9,7 +9,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { err } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
 import BackButton from "../../../components/BackButton";
 import CustomButton from "../../../components/CustomButton";
@@ -104,7 +103,7 @@ const AccountPersonal = () => {
         );
       }
     } catch (error) {
-      console.log(err);
+      console.log(error);
     }
     setLoad(false);
   };
